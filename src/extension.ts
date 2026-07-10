@@ -16,7 +16,7 @@ interface FocusTarget {
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.window.registerCustomEditorProvider(
-            'csvViewer.editor',
+            'csvStudios.editor',
             new CsvEditorProvider(),
             { webviewOptions: { retainContextWhenHidden: true } }
         )
