@@ -1,0 +1,73 @@
+{
+"name": "csv-studios",
+  "displayName": "CSV Studios",
+  "description": "The most beautiful way to view and edit CSV files",
+  "publisher": "yohervz",
+  "icon": "images/icon.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yohervz/csv-studios"
+  },
+  "bugs": {
+    "url": "https://github.com/yohervz/csv-studios/issues"
+  },
+  
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "categories": [
+    "Visualization",
+    "Data Science",
+    "Formatters"
+  ],
+  "keywords": [
+    "csv",
+    "tsv",
+    "csv viewer",
+    "csv editor",
+    "table",
+    "spreadsheet",
+    "data",
+    "csv formatter",
+    "excel"
+  ],
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "csvStudios.editor",
+        "displayName": "CSV Table View",
+        "selector": [
+          { "filenamePattern": "*.csv" },
+          { "filenamePattern": "*.tsv" }
+        ],
+        "priority": "default"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "24.x",
+    "@types/papaparse": "^5.5.2",
+    "@types/vscode": "^1.125.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "eslint": "^10.5.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1"
+  },
+  "overrides": {
+    "diff": "^8.0.4",
+    "serialize-javascript": "^7.0.6"
+  },
+  "dependencies": {
+    "papaparse": "^5.5.4"
+  }
+}
