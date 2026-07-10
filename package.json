@@ -1,7 +1,8 @@
 {
-"name": "csv-studios",
+  "name": "csv-studios",
   "displayName": "CSV Studios",
   "description": "The most beautiful way to view and edit CSV files",
+  "version": "0.0.1",
   "publisher": "yohervz",
   "icon": "images/icon.png",
   "license": "MIT",
@@ -12,7 +13,12 @@
   "bugs": {
     "url": "https://github.com/yohervz/csv-studios/issues"
   },
-  
+  "homepage": "https://github.com/yohervz/csv-studios#readme",
+
+  "engines": {
+    "vscode": "^1.125.0"
+  },
+
   "activationEvents": [],
   "main": "./out/extension.js",
   "categories": [
