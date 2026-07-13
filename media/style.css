@@ -1,0 +1,72 @@
+:root { --row-height: 38px; }
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: var(--vscode-font-family, -apple-system, "Segoe UI", sans-serif);
+    font-size: 13px;
+    color: var(--vscode-foreground);
+    background: var(--vscode-editor-background);
+}
+.table-wrapper { overflow: auto; max-height: 100vh; }
+table { border-collapse: collapse; width: 100%; }
+thead th {
+    position: sticky; top: 0;
+    background: var(--vscode-editor-background);
+    text-align: left; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.03em;
+    color: var(--vscode-descriptionForeground);
+    padding: 8px 16px; border-bottom: 1px solid var(--vscode-panel-border);
+    white-space: nowrap; z-index: 1;
+}
+tbody td {
+    padding: 0 16px; height: var(--row-height);
+    border-bottom: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.15));
+    white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; max-width: 320px;
+}
+tbody td.primary { font-weight: 500; }
+tbody tr:hover td { background: var(--vscode-list-hoverBackground); }
+tbody tr:last-child td { border-bottom: none; }
+.checkbox-col { width: 32px; padding: 0 8px !important; }
+.row-check { opacity: 0; cursor: pointer; }
+tr:hover .row-check, .row-check:checked { opacity: 1; }
+
+.action-bar {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--vscode-editorWidget-background);
+    border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.3));
+    border-radius: 8px; padding: 8px 12px; display: flex; align-items: center;
+    gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); font-size: 13px;
+}
+.action-bar.hidden { display: none; }
+#deleteBtn {
+    background: var(--vscode-errorForeground, #f14c4c); color: white;
+    border: none; border-radius: 4px; padding: 4px 12px;
+    cursor: pointer; font-size: 12px;
+}
+#deleteBtn:hover { opacity: 0.85; }
+#addRowBtn {
+    display: block; width: 100%; text-align: left; padding: 8px 16px;
+    border: none; background: transparent; color: var(--vscode-descriptionForeground);
+    font-size: 13px; cursor: pointer;
+}
+#addRowBtn:hover { background: var(--vscode-list-hoverBackground); color: var(--vscode-foreground); }
+
+.context-menu {
+    position: fixed; background: var(--vscode-menu-background, var(--vscode-editorWidget-background));
+    border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.3));
+    border-radius: 6px; padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 10; min-width: 160px;
+}
+.context-menu.hidden { display: none; }
+.menu-item { padding: 6px 10px; font-size: 13px; border-radius: 4px; cursor: pointer; }
+.menu-item:hover { background: var(--vscode-list-hoverBackground); }
+.menu-item.danger { color: var(--vscode-errorForeground, #f14c4c); }
+
+.editable { cursor: text; outline: none; }
+.editable:focus {
+    background: var(--vscode-editor-background);
+    box-shadow: inset 0 0 0 2px var(--vscode-focusBorder, #007acc);
+    border-radius: 2px;
+}
+.editable:hover:not(:focus) { background: var(--vscode-list-hoverBackground); }
