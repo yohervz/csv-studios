@@ -19,6 +19,119 @@ function escapeHtml(text) {
     return (text || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+function detectCellType(value) {
+    const v = (value ?? '').toString().trim();
+    
+    // 1. Common empty or null values in CSVs (Supports uppercase 'NULL')
+    if (v === '' || /^(null|n\/a|nan|-)$/i.test(v)) return null;
+
+    // 2. Booleans
+    if (/^(true|false|yes|no)$/i.test(v)) return 'Bool';
+
+    // 3. JSON
+    if ((v.startsWith('{') && v.endsWith('}')) || (v.startsWith('[') && v.endsWith(']'))) {
+        try {
+            JSON.parse(v);
+            return 'JSON';
+        } catch (e) { /* Ignore */ }
+    }
+
+    // 4. Identifiers: Standard UUID with dashes OR Alphanumeric UID (e.g., Firebase 20-40 chars)
+    // Reverted return value to 'UUID' to maintain compatibility with your system
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v) || 
+        /^[a-zA-Z0-9_\-]{20,40}$/.test(v)) {
+        return 'UUID';
+    }
+
+    // 5. Email address
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'Email';
+
+    // 6. URL
+    if (/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i.test(v)) return 'URL';
+
+    // 7. Percentage
+    if (/^-?\d+(\.\d+)?%$/.test(v)) return 'Percentage';
+
+    // 8. Currency
+    if (/^[\$\€\£\¥]\s?-?[\d,]+(\.\d+)?$/.test(v) || /^-?[\d,]+(\.\d+)?\s?[\$\€\£\¥]$/.test(v)) {
+        return 'Currency';
+    }
+
+    // Remove commas to evaluate pure numbers
+    const cleanNum = v.replace(/,/g, '');
+
+    // 9. Integers
+    if (/^-?[\d,]+$/.test(v) && !isNaN(cleanNum)) {
+        return 'Int';
+    }
+
+    // 10. Floats
+    if (/^-?[\d,]*\.\d+(e[-+]?\d+)?$/i.test(v) || /^-?[\d,]+e[-+]?\d+$/i.test(v)) {
+        if (!isNaN(cleanNum)) return 'Float';
+    }
+
+    // 11. Time
+    if (/^\d{1,2}:\d{2}(:\d{2})?(\s?(AM|PM|am|pm))?$/.test(v)) return 'Time';
+
+    // 12. Date and Date-Time (DateTime)
+    const dateRegex = /^\d{4}[\/\-]\d{2}[\/\-]\d{2}([T\s]\d{1,2}:\d{2}(:\d{2})?(\.\d{1,3})?(Z|[+-]\d{2}:\d{2})?)?$/;
+    const slashDateRegex = /^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}(\s\d{1,2}:\d{2}(:\d{2})?(\s?(AM|PM|am|pm))?)?$/;
+    
+    if (dateRegex.test(v) || slashDateRegex.test(v)) {
+        if (!isNaN(Date.parse(v.replace(' ', 'T')))) {
+            return (v.includes('T') || v.includes(' ') || v.includes(':')) ? 'DateTime' : 'Date';
+        }
+    }
+
+    // 13. Default
+    return 'Text';
+}
+
+function inferColumnType(colIndex, body) {
+    const counts = {};
+    for (const row of body) {
+        const t = detectCellType(row[colIndex]);
+        if (t) counts[t] = (counts[t] || 0) + 1;
+    }
+
+    // Type promotion logic
+    if (counts['Float'] > 0 && counts['Int'] > 0) {
+        counts['Float'] += counts['Int'];
+        delete counts['Int'];
+    }
+    
+    if (counts['DateTime'] > 0 && counts['Date'] > 0) {
+        counts['DateTime'] += counts['Date'];
+        delete counts['Date'];
+    }
+
+    let best = 'Text';
+    let bestCount = -1;
+    for (const [type, count] of Object.entries(counts)) {
+        if (count > bestCount) {
+            best = type;
+            bestCount = count;
+        }
+    }
+    return best;
+}
+
+const TYPE_ICONS = {
+    Text: 'Text',
+    Int: 'Int',
+    Float: 'Float',
+    Date: 'Date',
+    DateTime: 'DateTime',
+    Time: 'Time',
+    Bool: 'Bool',
+    JSON: 'JSON',
+    Email: 'Email',
+    URL: 'URL',
+    Percentage: 'Percent',
+    Currency: 'Currency',
+    UUID: 'UUID'
+};
+
 function renderTable(rows, focusTarget) {
     const active = document.activeElement;
     let activeState = null;
@@ -34,7 +147,11 @@ function renderTable(rows, focusTarget) {
     const [header = [], ...body] = rows;
 
     thead.innerHTML = '<tr><th class="checkbox-col"><input type="checkbox" id="selectAll" /></th>' +
-        header.map(c => `<th>${escapeHtml(c)}</th>`).join('') + '</tr>';
+        header.map((c, i) => {
+            const colType = inferColumnType(i, body);
+            const icon = TYPE_ICONS[colType] || '';
+            return `<th>${escapeHtml(c)} <span class="col-type-icon" title="${colType}">${icon}</span></th>`;
+        }).join('') + '</tr>';
 
     tbody.innerHTML = body.map((r, rowIndex) => `
         <tr data-row="${rowIndex}">

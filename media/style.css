@@ -70,3 +70,9 @@ tr:hover .row-check, .row-check:checked { opacity: 1; }
     border-radius: 2px;
 }
 .editable:hover:not(:focus) { background: var(--vscode-list-hoverBackground); }
+
+.col-type-icon {
+    font-size:1m;
+    opacity: 0.6;
+    margin-left: 4px;
+}
