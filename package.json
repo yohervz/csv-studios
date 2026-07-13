@@ -2,7 +2,7 @@
   "name": "csv-studios",
   "displayName": "CSV Studios",
   "description": "The most beautiful way to view and edit CSV files",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "publisher": "yohervz",
   "icon": "images/icon.png",
   "license": "MIT",
@@ -18,6 +18,8 @@
   "engines": {
     "vscode": "^1.125.0"
   },
+
+  
 
   "activationEvents": [],
   "main": "./out/extension.js",
