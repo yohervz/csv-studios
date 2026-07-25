@@ -29,7 +29,10 @@ export function getHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
                     <thead id="thead"></thead>
                     <tbody id="tbody"></tbody>
                 </table>
-                <button id="addRowBtn">+ Nueva fila</button>
+                <div class="toolbar-row">
+                    <button id="addRowBtn">+ Nueva fila</button>
+                    <button id="addColumnBtn">+ Nueva columna</button>
+                </div>
             </div>
 
             <div id="actionBar" class="action-bar hidden">
@@ -41,6 +44,12 @@ export function getHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
                 <div class="menu-item" data-action="insertAbove">Insertar fila arriba</div>
                 <div class="menu-item" data-action="insertBelow">Insertar fila abajo</div>
                 <div class="menu-item danger" data-action="delete">Eliminar fila</div>
+            </div>
+
+            <div id="columnContextMenu" class="context-menu hidden">
+                <div class="menu-item" data-action="insertColBefore">Insertar columna antes</div>
+                <div class="menu-item" data-action="insertColAfter">Insertar columna después</div>
+                <div class="menu-item danger" data-action="deleteCol">Eliminar columna</div>
             </div>
 
             <script nonce="${nonce}" src="${scriptUri}"></script>

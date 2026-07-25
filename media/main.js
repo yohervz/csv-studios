@@ -4,14 +4,17 @@ const tbody = document.getElementById('tbody');
 const actionBar = document.getElementById('actionBar');
 const selectionCount = document.getElementById('selectionCount');
 const contextMenu = document.getElementById('contextMenu');
+const columnContextMenu = document.getElementById('columnContextMenu');
 
 let activeRow = null;
+let activeCol = null;
 let originalValue = '';
+let originalHeaderValue = '';
 
 window.addEventListener('message', event => {
     const msg = event.data;
     if (msg.type === 'updateData') {
-        renderTable(msg.rows, msg.focusTarget);
+        renderTable(msg.rows, msg.focusTarget, msg.headerFocusTarget);
     }
 });
 
@@ -132,11 +135,17 @@ const TYPE_ICONS = {
     UUID: 'UUID'
 };
 
-function renderTable(rows, focusTarget) {
+function renderTable(rows, focusTarget, headerFocusTarget) {
     const active = document.activeElement;
     let activeState = null;
+    let activeHeaderState = null;
 
-    if (active && active.classList.contains('editable')) {
+    if (active && active.classList.contains('header-editable')) {
+        activeHeaderState = {
+            col: parseInt(active.dataset.col, 10),
+            text: active.textContent
+        };
+    } else if (active && active.classList.contains('editable')) {
         activeState = {
             row: parseInt(active.dataset.row, 10),
             col: parseInt(active.dataset.col, 10),
@@ -144,24 +153,27 @@ function renderTable(rows, focusTarget) {
         };
     }
 
-    const [header = [], ...body] = rows;
+    let header = rows[0] || [];
+    const body = rows.slice(1);
 
     thead.innerHTML = '<tr><th class="checkbox-col"><input type="checkbox" id="selectAll" /></th>' +
         header.map((c, i) => {
             const colType = inferColumnType(i, body);
             const icon = TYPE_ICONS[colType] || '';
-            return `<th>${escapeHtml(c)} <span class="col-type-icon" title="${colType}">${icon}</span></th>`;
+            return `<th data-col="${i}"><span class="header-editable editable" contenteditable="true" data-col="${i}">${escapeHtml(c)}</span> <span class="col-type-icon" title="${colType}">${icon}</span></th>`;
         }).join('') + '</tr>';
 
     tbody.innerHTML = body.map((r, rowIndex) => `
         <tr data-row="${rowIndex}">
             <td class="checkbox-col"><input type="checkbox" class="row-check" data-row="${rowIndex}" /></td>
-            ${r.map((c, i) => `<td class="${i === 0 ? 'primary' : ''} editable" contenteditable="true" data-row="${rowIndex}" data-col="${i}">${escapeHtml(c)}</td>`).join('')}
+            ${header.map((_, i) => `<td class="${i === 0 ? 'primary' : ''} editable" contenteditable="true" data-row="${rowIndex}" data-col="${i}">${escapeHtml(r[i])}</td>`).join('')}
         </tr>
     `).join('');
 
     if (focusTarget) {
         focusCell(focusTarget.row, focusTarget.col);
+    } else if (typeof headerFocusTarget === 'number') {
+        focusHeaderCell(headerFocusTarget);
     } else if (activeState) {
         const cell = document.querySelector(`td.editable[data-row="${activeState.row}"][data-col="${activeState.col}"]`);
         if (cell) {
@@ -169,9 +181,28 @@ function renderTable(rows, focusTarget) {
             focusCell(activeState.row, activeState.col);
             originalValue = activeState.text;
         }
+    } else if (activeHeaderState) {
+        const headerCell = document.querySelector(`.header-editable[data-col="${activeHeaderState.col}"]`);
+        if (headerCell) {
+            headerCell.textContent = activeHeaderState.text;
+            headerCell.focus();
+            originalHeaderValue = activeHeaderState.text;
+        }
     }
 
     updateBar();
+    markOverflowingCells();
+}
+
+function markOverflowingCells() {
+    document.querySelectorAll('tbody td.editable').forEach(cell => {
+        cell.classList.remove('overflowing');
+        cell.removeAttribute('data-full');
+        if (cell.scrollWidth > cell.clientWidth) {
+            cell.classList.add('overflowing');
+            cell.setAttribute('data-full', cell.textContent);
+        }
+    });
 }
 
 function focusCell(r, c) {
@@ -181,6 +212,18 @@ function focusCell(r, c) {
         const range = document.createRange();
         range.selectNodeContents(cell);
         range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+}
+
+function focusHeaderCell(col) {
+    const cell = document.querySelector(`.header-editable[data-col="${col}"]`);
+    if (cell) {
+        cell.focus();
+        const range = document.createRange();
+        range.selectNodeContents(cell);
         const sel = window.getSelection();
         sel.removeAllRanges();
         sel.addRange(range);
@@ -223,6 +266,12 @@ document.getElementById('addRowBtn').addEventListener('click', () => {
     vscode.postMessage({ type: 'insertRow', afterRowIndex: lastIndex });
 });
 
+document.getElementById('addColumnBtn').addEventListener('click', () => {
+    const headerCells = document.querySelectorAll('thead th[data-col]');
+    const lastColIndex = headerCells.length ? headerCells.length - 1 : -1;
+    vscode.postMessage({ type: 'addColumn', afterColIndex: lastColIndex });
+});
+
 tbody.addEventListener('contextmenu', (e) => {
     const tr = e.target.closest('tr[data-row]');
     if (!tr) return;
@@ -231,6 +280,16 @@ tbody.addEventListener('contextmenu', (e) => {
     contextMenu.style.top = e.pageY + 'px';
     contextMenu.style.left = e.pageX + 'px';
     contextMenu.classList.remove('hidden');
+});
+
+thead.addEventListener('contextmenu', (e) => {
+    const th = e.target.closest('th[data-col]');
+    if (!th) return;
+    e.preventDefault();
+    activeCol = parseInt(th.dataset.col, 10);
+    columnContextMenu.style.top = e.pageY + 'px';
+    columnContextMenu.style.left = e.pageX + 'px';
+    columnContextMenu.classList.remove('hidden');
 });
 
 tbody.addEventListener('focusin', (e) => {
@@ -263,7 +322,39 @@ tbody.addEventListener('focusout', (e) => {
     });
 });
 
-document.addEventListener('click', () => contextMenu.classList.add('hidden'));
+thead.addEventListener('focusin', (e) => {
+    if (!e.target.classList.contains('header-editable')) return;
+    originalHeaderValue = e.target.textContent;
+});
+
+thead.addEventListener('keydown', (e) => {
+    if (!e.target.classList.contains('header-editable')) return;
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        e.target.blur();
+    }
+    if (e.key === 'Escape') {
+        e.target.textContent = originalHeaderValue;
+        e.target.blur();
+    }
+});
+
+thead.addEventListener('focusout', (e) => {
+    if (!e.target.classList.contains('header-editable')) return;
+    const newValue = e.target.textContent.trim();
+    if (newValue === originalHeaderValue) return;
+
+    vscode.postMessage({
+        type: 'updateHeader',
+        colIndex: parseInt(e.target.dataset.col, 10),
+        value: newValue
+    });
+});
+
+document.addEventListener('click', () => {
+    contextMenu.classList.add('hidden');
+    columnContextMenu.classList.add('hidden');
+});
 
 contextMenu.addEventListener('click', (e) => {
     const action = e.target.dataset.action;
@@ -278,6 +369,23 @@ contextMenu.addEventListener('click', (e) => {
             break;
         case 'delete':
             vscode.postMessage({ type: 'deleteRows', rowIndices: [activeRow] });
+            break;
+    }
+});
+
+columnContextMenu.addEventListener('click', (e) => {
+    const action = e.target.dataset.action;
+    if (!action || activeCol === null) return;
+
+    switch (action) {
+        case 'insertColBefore':
+            vscode.postMessage({ type: 'addColumn', afterColIndex: activeCol - 1 });
+            break;
+        case 'insertColAfter':
+            vscode.postMessage({ type: 'addColumn', afterColIndex: activeCol });
+            break;
+        case 'deleteCol':
+            vscode.postMessage({ type: 'deleteColumn', colIndex: activeCol });
             break;
     }
 });

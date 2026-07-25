@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { WebviewMessage, FocusTarget } from './types';
 import { getHtml } from './webviewHtml';
-import { getParsedData, insertRow, deleteRows, updateCell } from './csvDocumentOps';
+import { getParsedData, insertRow, deleteRows, updateCell, updateHeader, addColumn, deleteColumn } from './csvDocumentOps';
 
 export class CsvEditorProvider implements vscode.CustomTextEditorProvider {
 
@@ -21,15 +21,18 @@ export class CsvEditorProvider implements vscode.CustomTextEditorProvider {
         webviewPanel.webview.html = getHtml(webviewPanel.webview, this.extensionUri);
 
         let pendingFocus: FocusTarget | null = null;
+        let pendingHeaderFocus: number | null = null;
 
         const updateWebview = () => {
             const rows = getParsedData(document);
             webviewPanel.webview.postMessage({
                 type: 'updateData',
                 rows,
-                focusTarget: pendingFocus
+                focusTarget: pendingFocus,
+                headerFocusTarget: pendingHeaderFocus
             });
             pendingFocus = null;
+            pendingHeaderFocus = null;
         };
 
         updateWebview();
@@ -51,6 +54,19 @@ export class CsvEditorProvider implements vscode.CustomTextEditorProvider {
                     break;
                 case 'updateCell':
                     await updateCell(document, message.rowIndex, message.colIndex, message.value);
+                    break;
+                case 'updateHeader':
+                    await updateHeader(document, message.colIndex, message.value);
+                    break;
+                case 'addColumn': {
+                    const rows = getParsedData(document);
+                    const currentColumnCount = rows.length > 0 ? rows[0].length : 0;
+                    pendingHeaderFocus = Math.min(Math.max(message.afterColIndex + 1, 0), currentColumnCount);
+                    await addColumn(document, message.afterColIndex);
+                    break;
+                }
+                case 'deleteColumn':
+                    await deleteColumn(document, message.colIndex);
                     break;
             }
         });
