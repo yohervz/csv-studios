@@ -17,7 +17,7 @@ The most beautiful way to view and edit CSV files in VS Code.
 ## 🚀 Usage
 
 - Open any `.csv` or `.tsv` file and it will automatically open in the CSV Studios table view.
-- Use the **+ Nueva fila** and **+ Nueva columna** toolbar buttons to quickly expand your dataset.
+- Use the **+ New row** and **+ New column** toolbar buttons to quickly expand your dataset.
 - Right-click on rows or columns to access advanced insertion and deletion commands.
 
 ## ⚙️ Requirements
