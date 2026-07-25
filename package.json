@@ -2,7 +2,7 @@
   "name": "csv-studios",
   "displayName": "CSV Studios",
   "description": "The most beautiful way to view and edit CSV files",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "yohervz",
   "icon": "images/icon.png",
   "license": "MIT",
