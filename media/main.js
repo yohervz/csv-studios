@@ -236,7 +236,7 @@ function updateBar() {
     const selected = checkboxes().filter(c => c.checked);
     if (selected.length > 0) {
         actionBar.classList.remove('hidden');
-        selectionCount.textContent = selected.length + ' seleccionada' + (selected.length > 1 ? 's' : '');
+        selectionCount.textContent = selected.length + ' selected';
     } else {
         actionBar.classList.add('hidden');
     }
