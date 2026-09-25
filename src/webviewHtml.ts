@@ -24,6 +24,9 @@ export function getHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
             <link href="${styleUri}" rel="stylesheet">
         </head>
         <body>
+            <div class="header-actions">
+                <input type="text" id="searchInput" placeholder="Search..." />
+            </div>
             <div class="table-wrapper">
                 <table>
                     <thead id="thead"></thead>

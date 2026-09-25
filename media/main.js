@@ -193,6 +193,7 @@ function renderTable(rows, focusTarget, headerFocusTarget) {
 
     updateBar();
     markOverflowingCells();
+    applySearchFilter();
 }
 
 function markOverflowingCells() {
@@ -253,6 +254,30 @@ thead.addEventListener('change', (e) => {
 tbody.addEventListener('change', (e) => {
     if (e.target.classList.contains('row-check')) updateBar();
 });
+
+function applySearchFilter() {
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
+    
+    const query = searchInput.value.toLowerCase();
+    const rows = document.querySelectorAll('tbody tr[data-row]');
+    
+    rows.forEach(row => {
+        const cells = Array.from(row.querySelectorAll('.editable'));
+        const rowText = cells.map(cell => cell.textContent.toLowerCase()).join(' ');
+        
+        if (rowText.includes(query)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.addEventListener('input', applySearchFilter);
+}
 
 document.getElementById('deleteBtn').addEventListener('click', () => {
     const rowIndices = checkboxes()
