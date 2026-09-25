@@ -156,7 +156,7 @@ function renderTable(rows, focusTarget, headerFocusTarget) {
     let header = rows[0] || [];
     const body = rows.slice(1);
 
-    thead.innerHTML = '<tr><th class="checkbox-col"><input type="checkbox" id="selectAll" /></th>' +
+    thead.innerHTML = '<tr><th class="row-num-col">#</th><th class="checkbox-col"><input type="checkbox" id="selectAll" /></th>' +
         header.map((c, i) => {
             const colType = inferColumnType(i, body);
             const icon = TYPE_ICONS[colType] || '';
@@ -165,6 +165,7 @@ function renderTable(rows, focusTarget, headerFocusTarget) {
 
     tbody.innerHTML = body.map((r, rowIndex) => `
         <tr data-row="${rowIndex}">
+            <td class="row-num-col">${rowIndex + 1}</td>
             <td class="checkbox-col"><input type="checkbox" class="row-check" data-row="${rowIndex}" /></td>
             ${header.map((_, i) => `<td class="${i === 0 ? 'primary' : ''} editable" contenteditable="true" data-row="${rowIndex}" data-col="${i}">${escapeHtml(r[i])}</td>`).join('')}
         </tr>
