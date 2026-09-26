@@ -229,3 +229,22 @@ tbody td.editable.overflowing:hover:not(:focus)::after {
     display: flex;
     align-items: center;
 }
+
+.dropdown-filter {
+    background: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border);
+    padding: 4px 8px;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    margin-right: 12px;
+    cursor: pointer;
+}
+.dropdown-filter:focus {
+    border-color: var(--vscode-focusBorder);
+}
+tbody tr.dup-group-alt td {
+    background: var(--vscode-editor-selectionBackground, rgba(38, 79, 120, 0.2));
+}

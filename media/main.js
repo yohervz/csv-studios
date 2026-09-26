@@ -196,6 +196,22 @@ function renderTable(rows, focusTarget, headerFocusTarget) {
         </tr>
     `).join('');
 
+    // Update Duplicate Filter Dropdown options
+    const dupFilter = document.getElementById('duplicateFilter');
+    if (dupFilter) {
+        const currentVal = dupFilter.value;
+        let optionsHtml = '<option value="none">Show All</option><option value="row">Exact Row Duplicates</option>';
+        header.forEach((c, i) => {
+            optionsHtml += `<option value="${i}">Duplicates in: ${escapeHtml(c)}</option>`;
+        });
+        dupFilter.innerHTML = optionsHtml;
+        if (dupFilter.querySelector(`option[value="${currentVal}"]`)) {
+            dupFilter.value = currentVal;
+        } else {
+            dupFilter.value = 'none';
+        }
+    }
+
     if (focusTarget) {
         focusCell(focusTarget.row, focusTarget.col);
     } else if (typeof headerFocusTarget === 'number') {
@@ -280,18 +296,66 @@ tbody.addEventListener('change', (e) => {
     if (e.target.classList.contains('row-check')) updateBar();
 });
 
-function applySearchFilter() {
+function applyFilters() {
     const searchInput = document.getElementById('searchInput');
-    if (!searchInput) return;
+    const query = searchInput ? searchInput.value.toLowerCase() : '';
     
-    const query = searchInput.value.toLowerCase();
-    const rows = document.querySelectorAll('tbody tr[data-row]');
+    const dupFilter = document.getElementById('duplicateFilter');
+    const filterValue = dupFilter ? dupFilter.value : 'none';
     
-    rows.forEach(row => {
-        const cells = Array.from(row.querySelectorAll('.editable'));
-        const rowText = cells.map(cell => cell.textContent.toLowerCase()).join(' ');
+    const trs = Array.from(document.querySelectorAll('tbody tr[data-row]'));
+    const tbodyElem = document.getElementById('tbody');
+    
+    if (filterValue === 'none') {
+        trs.sort((a, b) => parseInt(a.dataset.row, 10) - parseInt(b.dataset.row, 10));
+        trs.forEach(tr => {
+            tr.classList.remove('dup-group-alt');
+            tr.dataset.isDuplicate = "true";
+            tbodyElem.appendChild(tr);
+        });
+    } else {
+        const groups = new Map();
+        trs.forEach(tr => {
+            const cells = Array.from(tr.querySelectorAll('.editable'));
+            let key = '';
+            if (filterValue === 'row') {
+                key = cells.map(c => c.textContent).join('|');
+            } else {
+                const colIdx = parseInt(filterValue, 10);
+                if (cells[colIdx]) key = cells[colIdx].textContent;
+            }
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(tr);
+        });
         
-        if (rowText.includes(query)) {
+        let groupToggle = false;
+        groups.forEach((rows, key) => {
+            if (rows.length > 1) {
+                rows.forEach(row => {
+                    if (groupToggle) row.classList.add('dup-group-alt');
+                    else row.classList.remove('dup-group-alt');
+                    row.dataset.isDuplicate = "true";
+                    tbodyElem.appendChild(row);
+                });
+                groupToggle = !groupToggle;
+            } else {
+                rows[0].dataset.isDuplicate = "false";
+                rows[0].classList.remove('dup-group-alt');
+            }
+        });
+    }
+    
+    trs.forEach(row => {
+        const isDup = filterValue === 'none' || row.dataset.isDuplicate === "true";
+        let matchesSearch = true;
+        
+        if (query) {
+            const cells = Array.from(row.querySelectorAll('.editable'));
+            const rowText = cells.map(cell => cell.textContent.toLowerCase()).join(' ');
+            matchesSearch = rowText.includes(query);
+        }
+        
+        if (isDup && matchesSearch) {
             row.style.display = '';
         } else {
             row.style.display = 'none';
@@ -299,10 +363,14 @@ function applySearchFilter() {
     });
 }
 
+// Ensure compatibility if anything still calls applySearchFilter
+window.applySearchFilter = applyFilters;
+
 const searchInput = document.getElementById('searchInput');
-if (searchInput) {
-    searchInput.addEventListener('input', applySearchFilter);
-}
+if (searchInput) searchInput.addEventListener('input', applyFilters);
+
+const dupFilterElem = document.getElementById('duplicateFilter');
+if (dupFilterElem) dupFilterElem.addEventListener('change', applyFilters);
 
 document.getElementById('deleteBtn').addEventListener('click', () => {
     const rowIndices = checkboxes()
