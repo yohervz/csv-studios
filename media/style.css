@@ -205,12 +205,17 @@ tbody td.editable.overflowing:hover:not(:focus)::after {
 .top-bar-donation {
     display: flex;
     justify-content: flex-start;
-    padding: 12px 16px 4px 16px;
+    padding: 12px 16px 24px 16px;
     background: var(--vscode-editor-background);
 }
 
 .header-actions {
-    justify-content: flex-end;
+    justify-content: space-between;
+}
+
+.right-actions {
+    display: flex;
+    align-items: center;
 }
 
 .status-bar {
@@ -247,4 +252,17 @@ tbody td.editable.overflowing:hover:not(:focus)::after {
 }
 tbody tr.dup-group-alt td {
     background: var(--vscode-editor-selectionBackground, rgba(38, 79, 120, 0.2));
+}
+
+.random-phrase {
+    flex: 1;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-style: italic;
+    color: var(--vscode-foreground);
+    font-size: 13px;
+    padding-right: 20px;
+    user-select: none;
 }

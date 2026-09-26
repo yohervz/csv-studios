@@ -29,11 +29,14 @@ export function getHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
                 <a href="https://www.paypal.com/ncp/payment/DKATMN2XES8TU" target="_blank" class="buy-coffee-btn">☕ Buy Coffee</a>
             </div>
             <div class="header-actions">
-                <select id="duplicateFilter" class="dropdown-filter">
-                    <option value="none">Show All</option>
-                    <option value="row">Exact Row Duplicates</option>
-                </select>
-                <input type="text" id="searchInput" placeholder="Search..." />
+                <span id="randomPhrase" class="random-phrase" title=""></span>
+                <div class="right-actions">
+                    <select id="duplicateFilter" class="dropdown-filter">
+                        <option value="none">Show All</option>
+                        <option value="row">Exact Row Duplicates</option>
+                    </select>
+                    <input type="text" id="searchInput" placeholder="Search..." />
+                </div>
             </div>
             <div class="table-wrapper">
                 <table>
