@@ -43,7 +43,7 @@
     "customEditors": [
       {
         "viewType": "csvStudios.editor",
-        "displayName": "CSV Table View",
+        "displayName": "CSV Studios Table View",
         "selector": [
           { "filenamePattern": "*.csv" },
           { "filenamePattern": "*.tsv" }
