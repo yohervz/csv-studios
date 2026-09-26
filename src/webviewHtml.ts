@@ -59,6 +59,12 @@ export function getHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
                 <div class="menu-item danger" data-action="deleteCol">Delete column</div>
             </div>
 
+            <div class="status-bar" id="statusBar">
+                <span id="rowCountInfo">Rows: 0</span>
+                <span id="colCountInfo">Cols: 0</span>
+                <span id="fileSizeInfo">Size: 0 B</span>
+            </div>
+
             <script nonce="${nonce}" src="${scriptUri}"></script>
         </body>
         </html>`;

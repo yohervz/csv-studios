@@ -212,3 +212,20 @@ tbody td.editable.overflowing:hover:not(:focus)::after {
 .header-actions {
     justify-content: flex-end;
 }
+
+.status-bar {
+    background: var(--vscode-statusBar-background, var(--vscode-editorWidget-background));
+    color: var(--vscode-statusBar-foreground, var(--vscode-descriptionForeground));
+    padding: 4px 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    font-size: 11px;
+    border-top: 1px solid var(--vscode-panel-border, rgba(128,128,128,0.2));
+    user-select: none;
+    font-family: monospace;
+}
+.status-bar span {
+    display: flex;
+    align-items: center;
+}

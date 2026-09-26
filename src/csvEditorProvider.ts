@@ -25,9 +25,13 @@ export class CsvEditorProvider implements vscode.CustomTextEditorProvider {
 
         const updateWebview = () => {
             const rows = getParsedData(document);
+            const text = document.getText();
+            const fileSize = Buffer.byteLength(text, 'utf8');
+
             webviewPanel.webview.postMessage({
                 type: 'updateData',
                 rows,
+                fileSize,
                 focusTarget: pendingFocus,
                 headerFocusTarget: pendingHeaderFocus,
                 isDirty: document.isDirty

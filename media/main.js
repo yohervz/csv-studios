@@ -11,6 +11,14 @@ let activeCol = null;
 let originalValue = '';
 let originalHeaderValue = '';
 
+function formatBytes(bytes) {
+    if (bytes === 0 || !bytes) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
 window.addEventListener('message', event => {
     const msg = event.data;
     if (msg.type === 'updateData') {
@@ -19,6 +27,18 @@ window.addEventListener('message', event => {
             if (msg.isDirty) warning.classList.remove('hidden');
             else warning.classList.add('hidden');
         }
+
+        const rowCount = Math.max(0, msg.rows.length - 1);
+        const colCount = msg.rows.length > 0 ? msg.rows[0].length : 0;
+        
+        const rowCountInfo = document.getElementById('rowCountInfo');
+        const colCountInfo = document.getElementById('colCountInfo');
+        const fileSizeInfo = document.getElementById('fileSizeInfo');
+        
+        if (rowCountInfo) rowCountInfo.textContent = `Rows: ${rowCount}`;
+        if (colCountInfo) colCountInfo.textContent = `Cols: ${colCount}`;
+        if (fileSizeInfo && msg.fileSize !== undefined) fileSizeInfo.textContent = `Size: ${formatBytes(msg.fileSize)}`;
+
         renderTable(msg.rows, msg.focusTarget, msg.headerFocusTarget);
     }
 });
