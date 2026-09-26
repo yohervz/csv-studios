@@ -10,6 +10,17 @@ body {
 .table-wrapper { overflow: auto; max-height: 100vh; }
 table { border-collapse: collapse; width: 100%; }
 
+.unsaved-warning {
+    background: var(--vscode-statusBarItem-warningBackground, #cca700);
+    color: var(--vscode-statusBarItem-warningForeground, #000000);
+    text-align: center;
+    padding: 8px;
+    font-weight: 500;
+    font-size: 13px;
+    z-index: 20;
+}
+.unsaved-warning.hidden { display: none; }
+
 .header-actions {
     position: sticky;
     top: 0;

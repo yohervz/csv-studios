@@ -29,7 +29,8 @@ export class CsvEditorProvider implements vscode.CustomTextEditorProvider {
                 type: 'updateData',
                 rows,
                 focusTarget: pendingFocus,
-                headerFocusTarget: pendingHeaderFocus
+                headerFocusTarget: pendingHeaderFocus,
+                isDirty: document.isDirty
             });
             pendingFocus = null;
             pendingHeaderFocus = null;
@@ -39,6 +40,12 @@ export class CsvEditorProvider implements vscode.CustomTextEditorProvider {
 
         const changeSub = vscode.workspace.onDidChangeTextDocument(e => {
             if (e.document.uri.toString() === document.uri.toString()) {
+                updateWebview();
+            }
+        });
+
+        const saveSub = vscode.workspace.onDidSaveTextDocument(e => {
+            if (e.uri.toString() === document.uri.toString()) {
                 updateWebview();
             }
         });
@@ -71,6 +78,9 @@ export class CsvEditorProvider implements vscode.CustomTextEditorProvider {
             }
         });
 
-        webviewPanel.onDidDispose(() => changeSub.dispose());
+        webviewPanel.onDidDispose(() => {
+            changeSub.dispose();
+            saveSub.dispose();
+        });
     }
 }

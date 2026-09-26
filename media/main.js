@@ -14,6 +14,11 @@ let originalHeaderValue = '';
 window.addEventListener('message', event => {
     const msg = event.data;
     if (msg.type === 'updateData') {
+        const warning = document.getElementById('unsavedWarning');
+        if (warning) {
+            if (msg.isDirty) warning.classList.remove('hidden');
+            else warning.classList.add('hidden');
+        }
         renderTable(msg.rows, msg.focusTarget, msg.headerFocusTarget);
     }
 });
