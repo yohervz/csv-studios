@@ -26,7 +26,7 @@ export function getHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
         <body>
             <div id="unsavedWarning" class="unsaved-warning hidden">⚠️ You have unsaved changes. Press Ctrl+S (or Cmd+S) to save.</div>
             <div class="top-bar-donation">
-                <a href="https://www.paypal.com/ncp/payment/DKATMN2XES8TU" target="_blank" class="buy-coffee-btn">☕ Buy Coffee</a>
+                <a href="https://www.paypal.com/ncp/payment/DKATMN2XES8TU" target="_blank" class="buy-coffee-btn">☕ Buy Me a Coffee</a>
             </div>
             <div class="header-actions">
                 <span id="randomPhrase" class="random-phrase" title=""></span>
