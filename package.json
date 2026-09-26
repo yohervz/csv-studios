@@ -14,13 +14,9 @@
     "url": "https://github.com/yohervz/csv-studios/issues"
   },
   "homepage": "https://github.com/yohervz/csv-studios#readme",
-
   "engines": {
-    "vscode": "^1.125.0"
+    "vscode": "^1.107.0"
   },
-
-  
-
   "activationEvents": [],
   "main": "./out/extension.js",
   "categories": [
@@ -45,8 +41,12 @@
         "viewType": "csvStudios.editor",
         "displayName": "CSV Studios Table View",
         "selector": [
-          { "filenamePattern": "*.csv" },
-          { "filenamePattern": "*.tsv" }
+          {
+            "filenamePattern": "*.csv"
+          },
+          {
+            "filenamePattern": "*.tsv"
+          }
         ],
         "priority": "default"
       }
@@ -58,13 +58,14 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "package": "vsce package"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "24.x",
     "@types/papaparse": "^5.5.2",
-    "@types/vscode": "^1.125.0",
+    "@types/vscode": "^1.107.0",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.0.0",
     "eslint": "^10.5.0",
