@@ -4,6 +4,10 @@ All notable changes to the "csv-studios" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.7] - 2026-09-29
+### Added
+- **README Preview:** Added a preview image and demo video to the README for a better first impression on the marketplace and GitHub.
+
 ## [0.1.6] - 2026-09-26
 ### Added
 - **Duplicate Data Filter:** New dropdown filter to group and highlight identical rows or duplicate cell values within specific columns.

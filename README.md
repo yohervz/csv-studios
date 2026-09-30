@@ -2,6 +2,14 @@
 
 The most beautiful way to view and edit CSV files in VS Code.
 
+![CSV Studios Preview](images/preview.png)
+
+## 🎬 Demo
+
+https://user-images.githubusercontent.com/preview.mp4
+
+> **Note:** If the video doesn't play above, you can [download it here](images/preview.mp4).
+
 ## 🌟 Features
 
 - **Interactive Table View**: View CSV and TSV files in a clean, spreadsheet-like table.
@@ -29,6 +37,12 @@ No additional requirements.
 None reported yet. If you find a bug, please [open an issue](https://github.com/yohervz/csv-studios/issues).
 
 ## 📦 Release Notes
+
+### 0.1.7
+- Added preview image and demo video to the README.
+
+### 0.1.6
+- Duplicate Data Filter, Status Bar, Motivational Phrases, and Buy Coffee button.
 
 ### 0.1.5
 Initial release of CSV Studios.
