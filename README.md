@@ -6,7 +6,7 @@ The most beautiful way to view and edit CSV files in VS Code.
 
 ## 🎬 Demo
 
-https://user-images.githubusercontent.com/preview.mp4
+https://github.com/user-attachments/assets/cc11c37b-91a0-4d0c-b305-6519b4b96e54
 
 > **Note:** If the video doesn't play above, you can [download it here](images/preview.mp4).
 
